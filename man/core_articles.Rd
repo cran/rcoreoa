@@ -5,15 +5,15 @@
 \alias{core_articles_}
 \title{Get articles}
 \usage{
-core_articles(id, metadata = TRUE, fulltext = FALSE, citations = FALSE,
-  similar = FALSE, duplicate = FALSE, urls = FALSE,
-  extractedUrls = FALSE, faithfulMetadata = FALSE, key = NULL,
-  method = "GET", parse = TRUE, ...)
+core_articles(id, metadata = TRUE, fulltext = FALSE,
+  citations = FALSE, similar = FALSE, duplicate = FALSE,
+  urls = FALSE, extractedUrls = FALSE, faithfulMetadata = FALSE,
+  key = NULL, method = "GET", parse = TRUE, ...)
 
-core_articles_(id, metadata = TRUE, fulltext = FALSE, citations = FALSE,
-  similar = FALSE, duplicate = FALSE, urls = FALSE,
-  extractedUrls = FALSE, faithfulMetadata = FALSE, key = NULL,
-  method = "GET", ...)
+core_articles_(id, metadata = TRUE, fulltext = FALSE,
+  citations = FALSE, similar = FALSE, duplicate = FALSE,
+  urls = FALSE, extractedUrls = FALSE, faithfulMetadata = FALSE,
+  key = NULL, method = "GET", ...)
 }
 \arguments{
 \item{id}{(integer) CORE ID of the article that needs to be fetched.
@@ -31,7 +31,7 @@ Default: \code{FALSE}}
 \item{similar}{Whether to retrieve a list of similar articles.
 Default: \code{FALSE}
 Because the similar articles are calculated on demand, setting this
-parameter to true might slightly slow down the response time    query    boolean}
+parameter to true might slightly slow down the response time    query}
 
 \item{duplicate}{Whether to retrieve a list of CORE IDs of different
 versions of the article. Default: \code{FALSE}}
@@ -47,14 +47,19 @@ available in CORE API v2.0 beta}
 \item{faithfulMetadata}{Whether to retrieve the raw XML metadata of the
 article. Default: \code{FALSE}}
 
-\item{key}{A IUCN API token}
+\item{key}{A CORE API key. Get one at
+\url{https://core.ac.uk/api-keys/register}. Once you have the key,
+you can pass it into this parameter, or as a much better option,
+store your key as an environment variable with the name
+\code{CORE_KEY} or an R option as \code{core_key}. See \code{?Startup}
+for how to work with env vars and R options}
 
 \item{method}{(character) one of 'GET' (default) or 'POST'}
 
-\item{parse}{(logical) Whether to parse to list (`FALSE`) or
-data.frame (`TRUE`). Default: `TRUE`}
+\item{parse}{(logical) Whether to parse to list (\code{FALSE}) or
+data.frame (\code{TRUE}). Default: \code{TRUE}}
 
-\item{...}{Curl options passed to [crul::HttpClient()]}
+\item{...}{Curl options passed to \code{\link[crul]{HttpClient}}}
 }
 \description{
 Get articles
@@ -70,16 +75,17 @@ many ids
 \examples{
 \dontrun{
 core_articles(id = 21132995)
-core_articles(id = 21132995, similar = TRUE)
 core_articles(id = 21132995, fulltext = TRUE)
 core_articles(id = 21132995, citations = TRUE)
 
-ids <- c(20955435, 21132995, 21813171, 22815670, 14045109, 23828884,
+# when passing >1 article ID
+ids <- c(20955435, 21132995, 21813171, 22815670, 23828884,
    23465055, 23831838, 23923390, 22559733)
+## you can use method="GET" with lapply or similar
 res <- lapply(ids, core_articles)
 vapply(res, "[[", "", c("data", "datePublished"))
 
-# post request
+## or use method="POST" passing all at once
 res <- core_articles(ids, method = "POST")
 head(res$data)
 res$data$authors

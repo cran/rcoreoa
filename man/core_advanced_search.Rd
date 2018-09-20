@@ -18,12 +18,17 @@ core_advanced_search_(query, page = 1, limit = 10, key = NULL, ...)
 \item{limit}{(character) records to return (default: 10, minimum: 10),
 optional}
 
-\item{key}{A IUCN API token}
+\item{key}{A CORE API key. Get one at
+\url{https://core.ac.uk/api-keys/register}. Once you have the key,
+you can pass it into this parameter, or as a much better option,
+store your key as an environment variable with the name
+\code{CORE_KEY} or an R option as \code{core_key}. See \code{?Startup}
+for how to work with env vars and R options}
 
-\item{parse}{(logical) Whether to parse to list (`FALSE`) or
-data.frame (`TRUE`). Default: `TRUE`}
+\item{parse}{(logical) Whether to parse to list (\code{FALSE}) or
+data.frame (\code{TRUE}). Default: \code{TRUE}}
 
-\item{...}{Curl options passed to [crul::HttpClient()]}
+\item{...}{Curl options passed to \code{\link[crul]{HttpClient}}}
 }
 \value{
 data.frame with the following columns:
@@ -64,6 +69,8 @@ name metadata field (all other fields will be ignored if included)
 indicated
 \item \code{year_to}: string, to filter target document(s) publisher later than
 indicated
+\item \code{language}: string, to filter against languages specified in
+https://en.wikipedia.org/wiki/ISO_639-1
 \code{core_advanced_search} does the HTTP request and parses, while
 \code{core_advanced_search_} just does the HTTP request, gives back JSON as a
 character string
@@ -72,9 +79,9 @@ character string
 \examples{
 \dontrun{
 query <- data.frame(
-"all_of_the_words" = c("data mining", "machine learning"), 
+"all_of_the_words" = c("data mining", "machine learning"),
 "without_the_words" = c("social science", "medicine"),
-"year_from" = c("2013","2000"), 
+"year_from" = c("2013","2000"),
 "year_to" = c("2014", "2016"))
 
 res <- core_advanced_search(query)

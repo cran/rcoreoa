@@ -5,33 +5,50 @@
 \alias{core_articles_pdf_}
 \title{Download article pdf}
 \usage{
-core_articles_pdf(id, key = NULL, overwrite = TRUE, parse = TRUE, ...)
+core_articles_pdf(id, key = NULL, overwrite = FALSE, ...)
 
-core_articles_pdf_(id, key = NULL, overwrite = TRUE, ...)
+core_articles_pdf_(id, key = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{id}{(integer) CORE ID of the article that needs to be fetched.
-Required}
+One or more. Required}
 
-\item{key}{A IUCN API token}
+\item{key}{A CORE API key. Get one at
+\url{https://core.ac.uk/api-keys/register}. Once you have the key,
+you can pass it into this parameter, or as a much better option,
+store your key as an environment variable with the name
+\code{CORE_KEY} or an R option as \code{core_key}. See \code{?Startup}
+for how to work with env vars and R options}
 
-\item{overwrite}{(logical) overwrite file or not. Default: \code{TRUE}}
+\item{overwrite}{(logical) overwrite file or not if already
+on disk. Default: \code{FALSE}}
 
-\item{parse}{(logical) Whether to parse to list (`FALSE`) or
-data.frame (`TRUE`). Default: `TRUE`}
-
-\item{...}{Curl options passed to [crul::HttpClient()]}
+\item{...}{Curl options passed to \code{\link[crul:HttpClient]{crul::HttpClient()}}}
+}
+\value{
+\code{core_articles_pdf_} returns a file path on success.
+When many IDs passed to \code{core_articles_pdf} it returns a list (equal to
+length of IDs) where each element is a character vector of length equal
+to number of pages in the PDF; but on failure throws warning and returns
+NULL. When single ID apssed to \code{core_articles_pdf} it returns a character
+vector of length equal to number of pages in the PDF, but on failure
+stops with message
 }
 \description{
 Download article pdf
 }
 \details{
-\code{core_articles_history} does the HTTP request and parses, while
-\code{core_articles_history_} just does the HTTP request, gives back JSON as
-a character string
+\code{core_articles_pdf} does the HTTP request and parses
+PDF to text, while \code{core_articles_pdf_} just does the HTTP request
+and gives back the path to the file
 
-These functions take one article ID at a time. Use lapply/loops/etc for
-many ids
+If you get a message like \code{Error: Not Found (HTTP 404)}, that means
+a PDF was not found. That is, it does not exist. That is, there is no
+PDF associated with the article ID you searched for. This is the
+correct behavior, and nothing is wrong with this function or this
+package. We could do another web request to check if the id you
+pass in has a PDF or not first, but that's another request, slowing
+this function down.
 }
 \examples{
 \dontrun{
@@ -42,8 +59,9 @@ core_articles_pdf_(11549557)
 core_articles_pdf(11549557)
 
 ids <- c(11549557, 385071)
-res <- lapply(ids, core_articles_pdf)
-vapply(res, "[[", "", 1)
+res <- core_articles_pdf(ids)
+cat(res[[1]][1])
+cat(res[[2]][1])
 }
 }
 \references{
