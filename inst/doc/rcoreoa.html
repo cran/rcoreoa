@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Scott Chamberlain, Simon Goring" />
+
+<meta name="date" content="2020-07-06" />
+
+<title>Introduction to the rcoreoa package</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the rcoreoa package</h1>
+<h4 class="author">Scott Chamberlain, Simon Goring</h4>
+<h4 class="date">2020-07-06</h4>
+
+
+
+<p><code>rcoreoa</code> - Client for the CORE API (<a href="https://core.ac.uk/docs/" class="uri">https://core.ac.uk/docs/</a>). CORE (<a href="https://core.ac.uk" class="uri">https://core.ac.uk</a>) aggregates open access research outputs from repositories and journals worldwide and make them available to the public.</p>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>The package can be installed directly from the CRAN repository:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;rcoreoa&quot;</span>)</span></code></pre></div>
+<p>Or you can install the development version:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;ropensci/rcoreoa&quot;</span>)</span></code></pre></div>
+<p>Once the package is installed, simply run:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(<span class="st">&quot;rcoreoa&quot;</span>)</span></code></pre></div>
+</div>
+<div id="obtaining-an-api-key" class="section level2">
+<h2>Obtaining an API key</h2>
+<p>The Core API requires an API key, and, as such, requires you to register for the key on the Core Website (<a href="https://core.ac.uk/api-keys/register" class="uri">https://core.ac.uk/api-keys/register</a>). Once you register with your email address you will be sent an API key that looks a little like this:</p>
+<p><code>thisISyourAPIkeyITlooksLIKEaLONGstringOFletters</code></p>
+</div>
+<div id="using-the-api-key" class="section level2">
+<h2>Using the API Key</h2>
+<p>Best practice is to set the API key as an environment variable for your system, and then call it in R using <code>Sys.getenv()</code>. If you set the parameter in <code>.Renviron</code> it is permanently available to your R sessions. See <code>?Startup</code>. Be aware that if you are using version control you do not want to commit the <code>.Renviron</code> file in your local directory. Either edit your global <code>.Renviron</code> file, or make sure that <code>.Renviron</code> is added to your <code>.gitignore</code> file.</p>
+<p>Within the <code>.Renviron</code> file you will add:</p>
+<pre><code>CORE_KEY=thisISyourAPIkeyITlooksLIKEaLONGstringOFletters</code></pre>
+<p>The key may also be included in a file such as a <code>.bash_profile</code> file, or elsewhere. Users may decide which works best for them. Once you’ve added the API key, restart your R session and test to make sure the key has been added using the command:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">Sys.getenv</span>(<span class="st">&quot;CORE_KEY&quot;</span>)</span></code></pre></div>
+<p>If you get this to work, you’re doing great and we can move on to the next section. If this is still not working for you, check to make sure you have saved the <code>.Renviron</code> file, that it is in the same directory as your current project’s working directory, and that the name you have given the variable in the <code>.Renviron</code> file is the same as the name you are calling in <code>Sys.getenv()</code>.</p>
+</div>
+<div id="an-introduction-to-the-functions" class="section level2">
+<h2>An Introduction to the Functions</h2>
+<p>The <code>rcoreoa</code> package accesses CORE’s API to facilitate open text searching. The API allows an individual to search for articles based on text string searches using <code>core_search()</code>. Given a set of article IDs from the <code>core_search()</code>, users can then find more bibliographic information on the article (<code>core_articles()</code>) and article publishing history (<code>core_articles_history()</code>), on the journals in which the article was published (<code>core_journals()</code>).</p>
+<p>All of the functions return structured R objects, but can return JSON character strings by appending an unerscore (<code>_</code>) to the function name. We will illustrate the difference:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">core_journals</span>(<span class="dt">id =</span> <span class="st">&#39;2167-8359&#39;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="co">#&gt; $status</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">#&gt; [1] &quot;OK&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">#&gt; </span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; $data</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt; $data$title</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; [1] &quot;PeerJ&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; </span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt; $data$identifiers</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt; [1] &quot;oai:doaj.org/journal:576e4d34b8bf461bb586f1e90d80d7cc&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt; [2] &quot;issn:2167-8359&quot;                                       </span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">#&gt; [3] &quot;url:https://doaj.org/toc/2167-8359&quot;                   </span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="co">#&gt; </span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co">#&gt; $data$subjects</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="co">#&gt; [1] &quot;biomedical&quot; &quot;health&quot;     &quot;genetics&quot;   &quot;ecology&quot;    &quot;biology&quot;   </span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="co">#&gt; [6] &quot;Medicine&quot;   &quot;R&quot;         </span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="co">#&gt; </span></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co">#&gt; $data$language</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="co">#&gt; [1] &quot;EN&quot;</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="co">#&gt; </span></span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="co">#&gt; $data$rights</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a><span class="co">#&gt; [1] &quot;CC BY&quot;</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a><span class="co">#&gt; </span></span>
+<span id="cb6-24"><a href="#cb6-24"></a><span class="co">#&gt; $data$publisher</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a><span class="co">#&gt; [1] &quot;PeerJ Inc.&quot;</span></span></code></pre></div>
+<p>And with the underscore:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">core_journals_</span>(<span class="dt">id =</span> <span class="st">&#39;2167-8359&#39;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co">#&gt; [1] &quot;{\&quot;status\&quot;:\&quot;OK\&quot;,\&quot;data\&quot;:{\&quot;title\&quot;:\&quot;PeerJ\&quot;,\&quot;identifiers\&quot;:[\&quot;oai:doaj.org\\/journal:576e4d34b8bf461bb586f1e90d80d7cc\&quot;,\&quot;issn:2167-8359\&quot;,\&quot;url:https:\\/\\/doaj.org\\/toc\\/2167-8359\&quot;],\&quot;subjects\&quot;:[\&quot;biomedical\&quot;,\&quot;health\&quot;,\&quot;genetics\&quot;,\&quot;ecology\&quot;,\&quot;biology\&quot;,\&quot;Medicine\&quot;,\&quot;R\&quot;],\&quot;language\&quot;:\&quot;EN\&quot;,\&quot;rights\&quot;:\&quot;CC BY\&quot;,\&quot;publisher\&quot;:\&quot;PeerJ Inc.\&quot;}}&quot;</span></span></code></pre></div>
+<p>Through this Vignette we will illustrate some of the tools available as part of the package within a workflow that seeks to perform some basic bibliometric analysis.</p>
+</div>
+<div id="pagination" class="section level2">
+<h2>Pagination</h2>
+<p>Note that you are limited to a maximum of 100 results for the search functions; use combination of <code>page</code> and <code>limit</code> parameters to paginate through results. For example:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>x1 &lt;-<span class="st"> </span><span class="kw">core_search</span>(<span class="dt">query =</span> <span class="st">&#39;ecology&#39;</span>, <span class="dt">limit =</span> <span class="dv">100</span>, <span class="dt">page =</span> <span class="dv">1</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a>x2 &lt;-<span class="st"> </span><span class="kw">core_search</span>(<span class="dt">query =</span> <span class="st">&#39;ecology&#39;</span>, <span class="dt">limit =</span> <span class="dv">100</span>, <span class="dt">page =</span> <span class="dv">2</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">head</span>(x1<span class="op">$</span>data[,<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>])</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">#&gt;                _index   _type       _id</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt; 1 articles_2019_06_05 article 102353278</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; 2 articles_2019_06_05 article  20955435</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 3 articles_2019_06_05 article 101526846</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 4 articles_2019_06_05 article 103034034</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; 5 articles_2019_06_05 article 101912806</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; 6 articles_2019_06_05 article 103746797</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="kw">head</span>(x2<span class="op">$</span>data[,<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>])</span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt;                _index   _type      _id</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 1 articles_2019_06_05 article 79029462</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 2 articles_2019_06_05 article 79046038</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; 3 articles_2019_06_05 article 79019557</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt; 4 articles_2019_06_05 article 24465080</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; 5 articles_2019_06_05 article 79035703</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">#&gt; 6 articles_2019_06_05 article 79024454</span></span></code></pre></div>
+</div>
+<div id="high--vs.-low-level-interfaces" class="section level2">
+<h2>high- vs. low-level interfaces</h2>
+<p>Each function has a higher level interface that does HTTP request for data and parses the JSON using <code>jsonlite</code>. This is meant for those who want everything done for them, but there’s a time penalty for as the parsing adds extra time. If you just want raw JSON unparsed text, you can use the low level interface.</p>
+<p>The low level version of each function has <code>_</code> at the end (e.g., <code>core_search_</code>), while the high level version doesn’t have the <code>_</code> (e.g., <code>core_search</code>).</p>
+<p>The high level version of each function uses the low level method, and the low level method does all the logic and HTTP requesting, whereas the high level simply parses the output.</p>
+</div>
+<div id="search" class="section level2">
+<h2>Search</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>res &lt;-<span class="st"> </span><span class="kw">core_search</span>(<span class="dt">query =</span> <span class="st">&#39;ecology&#39;</span>, <span class="dt">limit =</span> <span class="dv">12</span>)</span>
+<span id="cb9-2"><a href="#cb9-2"></a>tibble<span class="op">::</span><span class="kw">as_tibble</span>(res<span class="op">$</span>data)</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#&gt; # A tibble: 12 x 5</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#&gt;    `_index` `_type` `_id` `_score` `_source`$id $authors $citations</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt;    &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;list&gt;   &lt;list&gt;    </span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt;  1 article… article 1023…     18.5 102353278    &lt;chr [2… &lt;list [0]&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt;  2 article… article 2095…     18.5 20955435     &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt;  3 article… article 1015…     17.5 101526846    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt;  4 article… article 1030…     17.5 103034034    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt;  5 article… article 1019…     17.5 101912806    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt;  6 article… article 1037…     17.5 103746797    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt;  7 article… article 1038…     17.5 103888859    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt;  8 article… article 1545…     17.5 154520564    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt;  9 article… article 1545…     17.5 154520563    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; 10 article… article 1004…     17.5 100453958    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a><span class="co">#&gt; 11 article… article 1011…     17.5 101147175    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt; 12 article… article 1017…     17.5 101760738    &lt;chr [1… &lt;list [0]&gt;</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">#&gt; # … with 50 more variables: $contributors &lt;list&gt;, $datePublished &lt;chr&gt;,</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">#&gt; #   $deleted &lt;chr&gt;, $description &lt;chr&gt;, $fullText &lt;lgl&gt;,</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="co">#&gt; #   $fullTextIdentifier &lt;chr&gt;, $identifiers &lt;list&gt;, $journals &lt;lgl&gt;,</span></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="co">#&gt; #   $language &lt;lgl&gt;, $duplicateId &lt;lgl&gt;, $publisher &lt;chr&gt;, $rawRecordXml &lt;chr&gt;,</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a><span class="co">#&gt; #   $relations &lt;list&gt;, $repositories &lt;list&gt;,</span></span>
+<span id="cb9-23"><a href="#cb9-23"></a><span class="co">#&gt; #   $repositoryDocument$pdfStatus &lt;int&gt;, $$textStatus &lt;int&gt;,</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a><span class="co">#&gt; #   $$metadataAdded &lt;dbl&gt;, $$metadataUpdated &lt;dbl&gt;, $$timestamp &lt;dbl&gt;,</span></span>
+<span id="cb9-25"><a href="#cb9-25"></a><span class="co">#&gt; #   $$depositedDate &lt;dbl&gt;, $$indexed &lt;int&gt;, $$deletedStatus &lt;chr&gt;,</span></span>
+<span id="cb9-26"><a href="#cb9-26"></a><span class="co">#&gt; #   $$pdfSize &lt;int&gt;, $$tdmOnly &lt;lgl&gt;, $$pdfOrigin &lt;chr&gt;, $similarities &lt;lgl&gt;,</span></span>
+<span id="cb9-27"><a href="#cb9-27"></a><span class="co">#&gt; #   $subjects &lt;list&gt;, $title &lt;chr&gt;, $topics &lt;list&gt;, $types &lt;list&gt;,</span></span>
+<span id="cb9-28"><a href="#cb9-28"></a><span class="co">#&gt; #   $urls &lt;list&gt;, $year &lt;int&gt;, $doi &lt;lgl&gt;, $oai &lt;chr&gt;, $downloadUrl &lt;chr&gt;,</span></span>
+<span id="cb9-29"><a href="#cb9-29"></a><span class="co">#&gt; #   $pdfHashValue &lt;lgl&gt;, $documentType &lt;lgl&gt;, $documentTypeConfidence &lt;lgl&gt;,</span></span>
+<span id="cb9-30"><a href="#cb9-30"></a><span class="co">#&gt; #   $citationCount &lt;lgl&gt;, $estimatedCitationCount &lt;lgl&gt;, $acceptedDate &lt;lgl&gt;,</span></span>
+<span id="cb9-31"><a href="#cb9-31"></a><span class="co">#&gt; #   $depositedDate &lt;dbl&gt;, $publishedDate &lt;lgl&gt;, $issn &lt;lgl&gt;,</span></span>
+<span id="cb9-32"><a href="#cb9-32"></a><span class="co">#&gt; #   $crossrefDocument &lt;lgl&gt;, $magDocument &lt;lgl&gt;, $attachmentCount &lt;int&gt;,</span></span>
+<span id="cb9-33"><a href="#cb9-33"></a><span class="co">#&gt; #   $repositoryPublicReleaseDate &lt;lgl&gt;, $extendedMetadataAttributes &lt;lgl&gt;,</span></span>
+<span id="cb9-34"><a href="#cb9-34"></a><span class="co">#&gt; #   $orcidAuthors &lt;lgl&gt;</span></span></code></pre></div>
+</div>
+<div id="advanced-search" class="section level2">
+<h2>Advanced Search</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>res &lt;-<span class="st"> </span><span class="kw">core_advanced_search</span>(<span class="kw">core_query</span>(<span class="dt">identifiers=</span><span class="st">&#39;&quot;oai:aura.abdn.ac.uk:2164/3837&quot;&#39;</span>,</span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="dt">identifiers=</span><span class="st">&#39;&quot;oai:aura.abdn.ac.uk:2164/3843&quot;&#39;</span>, <span class="dt">op=</span><span class="st">&quot;OR&quot;</span>))</span>
+<span id="cb10-3"><a href="#cb10-3"></a>tibble<span class="op">::</span><span class="kw">as_tibble</span>(res<span class="op">$</span>data[[<span class="dv">1</span>]])</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="co">#&gt; # A tibble: 2 x 5</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt;   `_index` `_type` `_id` `_score` `_source`$id $authors $citations $contributors</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;list&gt;   &lt;list&gt;     &lt;list&gt;       </span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt; 1 article… article 2549…     15.7 25497597     &lt;chr [5… &lt;list [0]&gt; &lt;chr [4]&gt;    </span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">#&gt; 2 article… article 2549…     15.7 25497603     &lt;chr [8… &lt;list [0]&gt; &lt;chr [3]&gt;    </span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt; # … with 50 more variables: $datePublished &lt;chr&gt;, $deleted &lt;chr&gt;,</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="co">#&gt; #   $description &lt;chr&gt;, $fullText &lt;chr&gt;, $fullTextIdentifier &lt;lgl&gt;,</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#&gt; #   $identifiers &lt;list&gt;, $journals &lt;list&gt;, $language &lt;lgl&gt;, $duplicateId &lt;lgl&gt;,</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="co">#&gt; #   $publisher &lt;lgl&gt;, $rawRecordXml &lt;chr&gt;, $relations &lt;list&gt;,</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="co">#&gt; #   $repositories &lt;list&gt;, $repositoryDocument$pdfStatus &lt;int&gt;,</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co">#&gt; #   $$textStatus &lt;int&gt;, $$metadataAdded &lt;dbl&gt;, $$metadataUpdated &lt;dbl&gt;,</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="co">#&gt; #   $$timestamp &lt;dbl&gt;, $$depositedDate &lt;dbl&gt;, $$indexed &lt;int&gt;,</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="co">#&gt; #   $$deletedStatus &lt;chr&gt;, $$pdfSize &lt;int&gt;, $$tdmOnly &lt;lgl&gt;, $$pdfOrigin &lt;lgl&gt;,</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="co">#&gt; #   $similarities &lt;lgl&gt;, $subjects &lt;list&gt;, $title &lt;chr&gt;, $topics &lt;list&gt;,</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="co">#&gt; #   $types &lt;list&gt;, $urls &lt;list&gt;, $year &lt;int&gt;, $doi &lt;chr&gt;, $oai &lt;chr&gt;,</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="co">#&gt; #   $downloadUrl &lt;chr&gt;, $pdfHashValue &lt;chr&gt;, $documentType &lt;chr&gt;,</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="co">#&gt; #   $documentTypeConfidence &lt;int&gt;, $citationCount &lt;lgl&gt;,</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="co">#&gt; #   $estimatedCitationCount &lt;lgl&gt;, $acceptedDate &lt;lgl&gt;, $depositedDate &lt;dbl&gt;,</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="co">#&gt; #   $publishedDate &lt;lgl&gt;, $issn &lt;lgl&gt;, $attachmentCount &lt;int&gt;,</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="co">#&gt; #   $repositoryPublicReleaseDate &lt;lgl&gt;,</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="co">#&gt; #   $extendedMetadataAttributes$attachmentCount &lt;int&gt;,</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="co">#&gt; #   $$publicReleaseDate &lt;lgl&gt;, $crossrefDocument &lt;lgl&gt;, $magDocument &lt;lgl&gt;,</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="co">#&gt; #   $orcidAuthors &lt;lgl&gt;</span></span></code></pre></div>
+</div>
+<div id="articles" class="section level1">
+<h1>Articles</h1>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">core_articles</span>(<span class="dt">id =</span> <span class="dv">21132995</span>)</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="co">#&gt; $status</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="co">#&gt; [1] &quot;OK&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="co">#&gt; </span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="co">#&gt; $data</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="co">#&gt; $data$id</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="co">#&gt; [1] &quot;21132995&quot;</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="co">#&gt; </span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="co">#&gt; $data$authors</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="co">#&gt; list()</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co">#&gt; </span></span>
+<span id="cb11-12"><a href="#cb11-12"></a><span class="co">#&gt; $data$contributors</span></span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="co">#&gt; [1] &quot;The Pennsylvania State University CiteSeerX Archives&quot;</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a><span class="co">#&gt; </span></span>
+<span id="cb11-15"><a href="#cb11-15"></a><span class="co">#&gt; $data$datePublished</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a><span class="co">#&gt; [1] &quot;2010-02-17&quot;</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="co">#&gt; </span></span>
+<span id="cb11-18"><a href="#cb11-18"></a><span class="co">#&gt; $data$description</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a><span class="co">#&gt; [1] &quot;Abstract. This paper discusses the potential contribution of an eco-theology to the management of marine resources. The claim of the Christian gospel is that God has a plan for everything in the universe and we are to live to bring it about. The Hebrew/Christian world view is significantly different from naturalism and humanism, the prevailing Greek world views in natural resource management. Three biblical paradigms are examined with insights into key elements in the management of fisheries: dominion; regulation and valuation and caring. In dominion we see the strength of mankind&amp;apos;s rule over other species, including fish, misused. Fisheries management generally fails to reign in this driving force, rewarding greed while calling for restraint. Regulation and its impact on mindsets and behaviour, is a theme evident in the Old and New Testaments- entering the promised land, keeping the law and caring for others, both humans and fish. The biblical view also emphasises life, death and resurrection as the process seen in nature. New fishery management paradigms may only develop after old ways and attitudes have died. Significant attitudinal change is essential to improve fisheries management and to achieve new management arrangements. Improved fishery stewardship may require &amp;quot;a new fisher&amp;quot;, relationally mature and societally accountable, to achieve the goals of sustainable fishery management through a variety of policy paradigms. The Christian world view promotes such attitudinal change to improve stewardship through reconciling issues in our relationship with God, neighbours and nature. It is worthy of further investigation&quot;</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a><span class="co">#&gt; </span></span>
+<span id="cb11-21"><a href="#cb11-21"></a><span class="co">#&gt; $data$identifiers</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a><span class="co">#&gt; [1] &quot;oai:CiteSeerX.psu:10.1.1.152.9831&quot; NA                                 </span></span>
+<span id="cb11-23"><a href="#cb11-23"></a><span class="co">#&gt; </span></span>
+<span id="cb11-24"><a href="#cb11-24"></a><span class="co">#&gt; $data$relations</span></span>
+<span id="cb11-25"><a href="#cb11-25"></a><span class="co">#&gt; list()</span></span>
+<span id="cb11-26"><a href="#cb11-26"></a><span class="co">#&gt; </span></span>
+<span id="cb11-27"><a href="#cb11-27"></a><span class="co">#&gt; $data$repositories</span></span>
+<span id="cb11-28"><a href="#cb11-28"></a><span class="co">#&gt;    id openDoarId      name uri urlHomepage urlOaipmh uriJournals physicalName</span></span>
+<span id="cb11-29"><a href="#cb11-29"></a><span class="co">#&gt; 1 145          0 CiteSeerX  NA          NA        NA          NA       noname</span></span>
+<span id="cb11-30"><a href="#cb11-30"></a><span class="co">#&gt;   source software metadataFormat description journal roarId pdfStatus nrUpdates</span></span>
+<span id="cb11-31"><a href="#cb11-31"></a><span class="co">#&gt; 1     NA       NA             NA          NA      NA      0        NA         0</span></span>
+<span id="cb11-32"><a href="#cb11-32"></a><span class="co">#&gt;   disabled lastUpdateTime repositoryLocation</span></span>
+<span id="cb11-33"><a href="#cb11-33"></a><span class="co">#&gt; 1    FALSE             NA                 NA</span></span>
+<span id="cb11-34"><a href="#cb11-34"></a><span class="co">#&gt; </span></span>
+<span id="cb11-35"><a href="#cb11-35"></a><span class="co">#&gt; $data$repositoryDocument</span></span>
+<span id="cb11-36"><a href="#cb11-36"></a><span class="co">#&gt; $data$repositoryDocument$pdfStatus</span></span>
+<span id="cb11-37"><a href="#cb11-37"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb11-38"><a href="#cb11-38"></a><span class="co">#&gt; </span></span>
+<span id="cb11-39"><a href="#cb11-39"></a><span class="co">#&gt; $data$repositoryDocument$metadataAdded</span></span>
+<span id="cb11-40"><a href="#cb11-40"></a><span class="co">#&gt; [1] 1.413993e+12</span></span>
+<span id="cb11-41"><a href="#cb11-41"></a><span class="co">#&gt; </span></span>
+<span id="cb11-42"><a href="#cb11-42"></a><span class="co">#&gt; $data$repositoryDocument$metadataUpdated</span></span>
+<span id="cb11-43"><a href="#cb11-43"></a><span class="co">#&gt; [1] 1.529412e+12</span></span>
+<span id="cb11-44"><a href="#cb11-44"></a><span class="co">#&gt; </span></span>
+<span id="cb11-45"><a href="#cb11-45"></a><span class="co">#&gt; $data$repositoryDocument$depositedDate</span></span>
+<span id="cb11-46"><a href="#cb11-46"></a><span class="co">#&gt; [1] 1.266365e+12</span></span>
+<span id="cb11-47"><a href="#cb11-47"></a><span class="co">#&gt; </span></span>
+<span id="cb11-48"><a href="#cb11-48"></a><span class="co">#&gt; </span></span>
+<span id="cb11-49"><a href="#cb11-49"></a><span class="co">#&gt; $data$subjects</span></span>
+<span id="cb11-50"><a href="#cb11-50"></a><span class="co">#&gt; [1] &quot;text&quot;</span></span>
+<span id="cb11-51"><a href="#cb11-51"></a><span class="co">#&gt; </span></span>
+<span id="cb11-52"><a href="#cb11-52"></a><span class="co">#&gt; $data$topics</span></span>
+<span id="cb11-53"><a href="#cb11-53"></a><span class="co">#&gt; [1] &quot;Ecology&quot;              &quot;Theology&quot;             &quot;Eco-theology&quot;        </span></span>
+<span id="cb11-54"><a href="#cb11-54"></a><span class="co">#&gt; [4] &quot;Fisheries Management&quot;</span></span>
+<span id="cb11-55"><a href="#cb11-55"></a><span class="co">#&gt; </span></span>
+<span id="cb11-56"><a href="#cb11-56"></a><span class="co">#&gt; $data$types</span></span>
+<span id="cb11-57"><a href="#cb11-57"></a><span class="co">#&gt; list()</span></span>
+<span id="cb11-58"><a href="#cb11-58"></a><span class="co">#&gt; </span></span>
+<span id="cb11-59"><a href="#cb11-59"></a><span class="co">#&gt; $data$year</span></span>
+<span id="cb11-60"><a href="#cb11-60"></a><span class="co">#&gt; [1] 2010</span></span>
+<span id="cb11-61"><a href="#cb11-61"></a><span class="co">#&gt; </span></span>
+<span id="cb11-62"><a href="#cb11-62"></a><span class="co">#&gt; $data$oai</span></span>
+<span id="cb11-63"><a href="#cb11-63"></a><span class="co">#&gt; [1] &quot;oai:CiteSeerX.psu:10.1.1.152.9831&quot;</span></span>
+<span id="cb11-64"><a href="#cb11-64"></a><span class="co">#&gt; </span></span>
+<span id="cb11-65"><a href="#cb11-65"></a><span class="co">#&gt; $data$downloadUrl</span></span>
+<span id="cb11-66"><a href="#cb11-66"></a><span class="co">#&gt; [1] &quot;&quot;</span></span></code></pre></div>
+</div>
+<div id="article-history" class="section level1">
+<h1>Article history</h1>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">core_articles_history</span>(<span class="dt">id =</span> <span class="st">&#39;21132995&#39;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="co">#&gt; $status</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="co">#&gt; [1] &quot;OK&quot;</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">#&gt; </span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">#&gt; $data</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">#&gt;              datetime</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">#&gt; 1 2016-08-03 00:13:41</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">#&gt; 2 2014-10-22 16:42:14</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="co">#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               metadata</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="co">#&gt; 1                                                                                                               &lt;record&gt;&lt;header&gt;&lt;identifier&gt;\n    \n      \n        oai:CiteSeerX.psu:10.1.1.152.9831&lt;/identifier&gt;&lt;datestamp&gt;\n        2010-02-17&lt;/datestamp&gt;\n      &lt;/header&gt;&lt;metadata&gt;&lt;oai_dc:dc xmlns:oai_dc=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/&quot; xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd&quot; &gt;&lt;dc:title&gt;\n      \n        \n          &lt;/dc:title&gt;&lt;dc:subject&gt;\n          Ecology&lt;/dc:subject&gt;&lt;dc:subject&gt;\n          Theology&lt;/dc:subject&gt;&lt;dc:subject&gt;\n          Eco-theology&lt;/dc:subject&gt;&lt;dc:subject&gt;\n          Fisheries Management&lt;/dc:subject&gt;&lt;dc:description&gt;\n          Abstract. This paper discusses the potential contribution of an eco-theology to the management of marine resources. The claim of the Christian gospel is that God has a plan for everything in the universe and we are to live to bring it about. The Hebrew/Christian world view is significantly different from naturalism and humanism, the prevailing Greek world views in natural resource management. Three biblical paradigms are examined with insights into key elements in the management of fisheries: dominion; regulation and valuation and caring. In dominion we see the strength of mankind&amp;apos;s rule over other species, including fish, misused. Fisheries management generally fails to reign in this driving force, rewarding greed while calling for restraint. Regulation and its impact on mindsets and behaviour, is a theme evident in the Old and New Testaments- entering the promised land, keeping the law and caring for others, both humans and fish. The biblical view also emphasises life, death and resurrection as the process seen in nature. New fishery management paradigms may only develop after old ways and attitudes have died. Significant attitudinal change is essential to improve fisheries management and to achieve new management arrangements. Improved fishery stewardship may require &amp;quot;a new fisher&amp;quot;, relationally mature and societally accountable, to achieve the goals of sustainable fishery management through a variety of policy paradigms. The Christian world view promotes such attitudinal change to improve stewardship through reconciling issues in our relationship with God, neighbours and nature. It is worthy of further investigation.&lt;/dc:description&gt;&lt;dc:contributor&gt;\n          The Pennsylvania State University CiteSeerX Archives&lt;/dc:contributor&gt;&lt;dc:publisher&gt;\n          &lt;/dc:publisher&gt;&lt;dc:date&gt;\n          2010-02-17&lt;/dc:date&gt;&lt;dc:date&gt;\n          2010-02-17&lt;/dc:date&gt;&lt;dc:format&gt;\n          application/pdf&lt;/dc:format&gt;&lt;dc:type&gt;\n          text&lt;/dc:type&gt;&lt;dc:identifier&gt;\n          http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.152.9831&lt;/dc:identifier&gt;&lt;dc:source&gt;\n          http://www.orst.edu/Dept/IIFET/2000/papers/mcilgorm.pdf&lt;/dc:source&gt;&lt;dc:language&gt;\n          en&lt;/dc:language&gt;&lt;dc:rights&gt;\n          Metadata may be used without restrictions as long as the oai identifier remains attached to it.&lt;/dc:rights&gt;\n        &lt;/oai_dc:dc&gt;\n      &lt;/metadata&gt;\n    &lt;/record&gt;</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="co">#&gt; 2 &lt;record&gt;&lt;header&gt;&lt;identifier&gt;\n        \n      \n    \n    \n      \n        oai:CiteSeerX.psu:10.1.1.152.9831&lt;/identifier&gt;&lt;datestamp&gt;\n        2010-02-17&lt;/datestamp&gt;\n      &lt;/header&gt;&lt;metadata&gt;&lt;oai_dc:dc xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:oai_dc=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/&quot; xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd&quot; &gt;&lt;dc:title&gt;\n      \n      \n        \n          &lt;/dc:title&gt;&lt;dc:subject&gt;\n      \n      \n        \n          \n          Ecology&lt;/dc:subject&gt;&lt;dc:subject&gt;\n          Theology&lt;/dc:subject&gt;&lt;dc:subject&gt;\n          Eco-theology&lt;/dc:subject&gt;&lt;dc:subject&gt;\n          Fisheries Management&lt;/dc:subject&gt;&lt;dc:description&gt;\n          Abstract. This paper discusses the potential contribution of an eco-theology to the management of marine resources. The claim of the Christian gospel is that God has a plan for everything in the universe and we are to live to bring it about. The Hebrew/Christian world view is significantly different from naturalism and humanism, the prevailing Greek world views in natural resource management. Three biblical paradigms are examined with insights into key elements in the management of fisheries: dominion; regulation and valuation and caring. In dominion we see the strength of mankind&amp;apos;s rule over other species, including fish, misused. Fisheries management generally fails to reign in this driving force, rewarding greed while calling for restraint. Regulation and its impact on mindsets and behaviour, is a theme evident in the Old and New Testaments- entering the promised land, keeping the law and caring for others, both humans and fish. The biblical view also emphasises life, death and resurrection as the process seen in nature. New fishery management paradigms may only develop after old ways and attitudes have died. Significant attitudinal change is essential to improve fisheries management and to achieve new management arrangements. Improved fishery stewardship may require &amp;quot;a new fisher&amp;quot;, relationally mature and societally accountable, to achieve the goals of sustainable fishery management through a variety of policy paradigms. The Christian world view promotes such attitudinal change to improve stewardship through reconciling issues in our relationship with God, neighbours and nature. It is worthy of further investigation.&lt;/dc:description&gt;&lt;dc:contributor&gt;\n          The Pennsylvania State University CiteSeerX Archives&lt;/dc:contributor&gt;&lt;dc:publisher&gt;\n          &lt;/dc:publisher&gt;&lt;dc:date&gt;\n          \n          2010-02-17&lt;/dc:date&gt;&lt;dc:date&gt;\n          2010-02-17&lt;/dc:date&gt;&lt;dc:format&gt;\n          application/pdf&lt;/dc:format&gt;&lt;dc:type&gt;\n          text&lt;/dc:type&gt;&lt;dc:identifier&gt;\n          http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.152.9831&lt;/dc:identifier&gt;&lt;dc:source&gt;\n          http://www.orst.edu/Dept/IIFET/2000/papers/mcilgorm.pdf&lt;/dc:source&gt;&lt;dc:language&gt;\n          en&lt;/dc:language&gt;&lt;dc:rights&gt;\n          Metadata may be used without restrictions as long as the oai identifier remains attached to it.&lt;/dc:rights&gt;\n        &lt;/oai_dc:dc&gt;\n        \n      &lt;/metadata&gt;\n        \n      \n    &lt;/record&gt;</span></span></code></pre></div>
+</div>
+<div id="journals" class="section level1">
+<h1>Journals</h1>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">core_journals</span>(<span class="dt">id =</span> <span class="st">&#39;2220-721X&#39;</span>)</span></code></pre></div>
+</div>
+<div id="get-pdfs" class="section level1">
+<h1>Get PDFs</h1>
+<p>The <code>_</code> for these methods means that you get a file path back to the PDF, while the high level version without the <code>_</code> parses the pdf to text for you.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">core_articles_pdf_</span>(<span class="dv">11549557</span>)</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

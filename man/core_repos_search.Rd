@@ -4,16 +4,15 @@
 \alias{core_repos_search}
 \title{Search CORE repositories}
 \usage{
-core_repos_search(query, page = 1, limit = 10, key = NULL,
-  parse = TRUE, ...)
+core_repos_search(query, page = 1, limit = 10, key = NULL, parse = TRUE, ...)
 }
 \arguments{
 \item{query}{(character) query string, required}
 
 \item{page}{(character) page number (default: 1), optional}
 
-\item{limit}{(character) records to return (default: 10, minimum: 10),
-optional}
+\item{limit}{(character) records to return (default: 10, minimum: 10,
+maximum: 100), optional}
 
 \item{key}{A CORE API key. Get one at
 \url{https://core.ac.uk/api-keys/register}. Once you have the key,

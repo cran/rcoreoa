@@ -14,7 +14,7 @@ CORE at \url{https://core.ac.uk} and their API docs at
 
 Each API endpoint has two functions that interface with it - a higher
 level interface and a lower level interface. The lower level functions
-have an underscore (\code{_}) at the end of the function name, while their
+have an underscore (\verb{_}) at the end of the function name, while their
 corresponding higher level companions do not. The higher level functions
 parse to list/data.frame's (as tidy as possible). Lower level
 functions give back JSON (character class) thus are slightly faster not
@@ -30,8 +30,7 @@ article PDF, and optionally extract text
 \item \code{\link[=core_repos_search]{core_repos_search()}} / \code{\link[=core_repos_search_]{core_repos_search_()}} - search for
 repositories
 \item \code{\link[=core_search]{core_search()}} / \code{\link[=core_search_]{core_search_()}} - search articles
-\item \code{\link[=core_advanced_search]{core_advanced_search()}} / \code{\link[=core_advanced_search_]{core_advanced_search_()}} -
-advanced search of articles
+\item \code{\link[=core_advanced_search]{core_advanced_search()}} -  advanced search of articles
 }
 }
 
@@ -39,6 +38,15 @@ advanced search of articles
 
 You'll need a CORE API token/key to use this package. Get one at
 \url{https://core.ac.uk/api-keys/register}
+}
+
+\section{Pagination}{
+
+Note that you are limited to a maximum of 100 results for the search
+functions; use combination of \code{page} and \code{limit} parameters to
+paginate through results. For example:\preformatted{x1 <- core_search(query = 'ecology', limit = 100, page = 1)
+x2 <- core_search(query = 'ecology', limit = 100, page = 2)
+}
 }
 
 \author{
